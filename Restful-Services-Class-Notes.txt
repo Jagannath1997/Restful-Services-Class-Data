@@ -725,11 +725,9 @@ Add GSON dependency in project pom.xml file
 
 Gson gson = new Gson();
 
-fromJson()
-toJson();
+Object fromJson(String jsonData)
+String toJson(Object object);
 
-
-<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 
 <dependency>
     <groupId>com.google.code.gson</groupId>
@@ -738,9 +736,7 @@ toJson();
 </dependency>
 
 
-
-
-
+--------------------------------------------------------------------
 IO streams : Will read data from file. It will read from first character to last character.
 
 jax-p (java api for xml parsing/processing) : Will read data from xml in text format.
@@ -822,9 +818,9 @@ To inject values from client to server side resources we will use jax-rs injecti
 @HeaderParam
 @CookieParam 
 
----------------------------------------------------------------------------------------------
+---------------------------------------------------------------------
 
-@PathParameter : It is used to recieve value from client to Resource class.
+@PathParameter : It is used to recieve value from client http request to Resource class from URL.
 
 @Path("/emp")
 public class EmpResource {
@@ -849,14 +845,15 @@ emp - root resource path
 101 - path parameter value
 type : GET
 
----------------------------------------------------------------------------
+--------------------------------------------------------------------
 For normal java class, we can create object and we can call methods like below 
 
 EmpResource res = new EMpResource();
 res.findById(101);
 
-But in Rest applications, we are not going to call methods directly using objects.
-We will send http request to invoke resource methods like below.
+But in Rest applications, we are not going to call methods directly using objects at client side.
+
+Client will send http request to invoke resource methods like below.
 
 http://localhost:9090/JAX-RS-JERSEY-PATH-PARAM-APP/rest/emp/101
 
@@ -864,12 +861,118 @@ In above url, 101 represents path parameter value.
 
 Note: PathParameter values are mandatory to invoke resource methods.
 
+-----------------------------------------------------------------
+07-Mar-2019
+-----------------------------------------------------------------
+client and Resource
+
+client will send http request to invoke resource
+
+As part of request clients needs to send some data as input for resource methods.
+
+Client sending values we need to inject to resource classes. For that we will use jax-rs injection annotations.
+
+PathParam, QUeryParam, MatrixParam, FormParam, BeanParam etc..
+
+@PathParam:
+-----------
+
+@Path("/emp")
+public class EmpResource{
+
+@GET
+@Path("{eid}")
+@Produces({"application/json","application/xml"})
+public Employee findById(@PathParam("eid") String eid){
+
+	//logic
+	return emp;
+}
+
+}
+
+Request Type : GET
+
+URL : http://localhost:9090/App/rest/emp/
+
+Header : Accept=application/json
 
 
 
 
 
+http://localhost:9090/JAX-RS-JERSEY-PATH-PARAM-APP/rest/emp/101
 
+chrome://apps/
+
+
+
+
+@QueryParam:
+-----------
+This is used to read client url value and inject that value to resource class based on key and value pair.
+
+
+
+
+http://localhost:9090/JAX-RS-JERSEY-PATH-PARAM-APP/rest/emp?eid=101&ename=Smith
+
+
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book?isbn=ISBN001
+
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book/isbn?isbn=ISBN001
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book/
+?bname=spring&aname=rodjhonson
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book/isbn?isbn=ISBN001&isbn=ISBN002
+
+
+UriInfo
+
+path parameters
+----------------
+Path parameter values client has to send in request url
+
+Path Parameters plays major role in resource method identification and invocation
+
+Path Parameters are mandatory to invoke rest resource methods
+
+Path Parameters will be seperated by slash (/)
+
+Query Parameters
+-------------------
+Query Parameter values client has to send in request url in the form of key and value pair.
+
+Query Parameters will not play any role in resource method identification and invocation.
+
+Query Parameters are optional to invoke resource methods
+
+Query Parameters will start with ? in URL.
+
+We can pass multiple query paramters in URL with and (&) as seperator.
+
+
+
+@GET
+@Path("/isbn")
+public String findPriceByIsbn(@QueryParam("isbn") String isbn) {
+
+System.out.println("BookResource :: findPriceByIsbn called");
+
+	System.out.println("ISBN :: " + isbn);
+
+	String responseMsg = "Book Price is $300.00";
+
+	return responseMsg;
+}
+
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book/isbns?isbn=ISBN001&isbn=ISBN002&bid=ISBN003
+
+http://localhost:9090/JAX-RS-JERSEY-QUERY-PARAM-APP/api/book/isbns?isbn=ISBN001&isbn=ISBN002&bid=101&bid=102&bid=103
 
 
 
